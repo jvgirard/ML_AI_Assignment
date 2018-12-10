@@ -1,0 +1,77 @@
+Relatório T2 IA - João Victor Girard
+
+Dado usado)
+Car Evaluation Data Set  - http://archive.ics.uci.edu/ml/datasets/Car+Evaluation
+Este exemplo mostra a avaliação de 1728 carros se eles são: inaceitáveis, aceitáveis, bons ou muito bons.
+Pode ser considerado um bom data set, já que tem uma boa quantidade de instâncias, não possuem perdas de valores e existem poucos
+atributos (6). Sendo categorizado como um data set de classificação.
+
+Classes: unacc, acc, good, vgood 
+
+Atributos:
+buying: vhigh, high, med, low. 
+maint: vhigh, high, med, low. 
+doors: 2, 3, 4, 5more. 
+persons: 2, 4, more. 
+lug_boot: small, med, big. 
+safety: low, med, high. 
+
+Probabilistico)
+Neste exemplo temos um aprendizado de máquina feito a partir do cálculo de probabilidade de cada um dos eventos a serem categorizados.
+É lido cada um dos exemplos do batch de treinamento e somado o número de vezes que o evento ocorreu. Ao final da contagem, é iniciado a
+avaliação dos objetos no batch de testes. Esta avaliação é feita de modo que cada evento é tomado como um evento independente e a probabilidade
+de cada um dos eventos lidos, dada a quantidade de elementos total, é multiplicada uma a uma para ser determinada a probabilidade da
+classe ocupada. Possuindo as probabilidades de cada classe para um dado evento, a classe de maior probabilidade é selecionada.
+Tempo de execução total: < 1s
+
+Feito isso, a maior acurácia desse modelo encontrada foi: 
+>>>> Accuracy is: 0.751596053395241 of 1382 subjects for training (80.0%) and 345 subjects for testing
+
+Ponto negativo detectado:
+Dataset utilizado tem uma probabilidade muito mais alta de ocorrer uma classe do que as outras 3. Isso faz com que este médodo encontre
+sempre os dados para esta classe destoante e não identifique para as outras, gerando assim perdas grandes na acurácia.
+
+
+Rede Neural)
+Neste modelo foi utilizado uma rede neural codificada através do TensorFlow. A função de ativação utilizada foi a Relu e a taxa de 
+aprendizado  foi de 0.07. Foi utilizado somente um neurônio e foram realizadas 2000 épocas.
+Tempo de execução total: +- 9s
+
+O erro na época 0 é 1.2451559
+O erro na época 100 é 0.85788065
+O erro na época 200 é 0.8467895
+O erro na época 300 é 0.84090567
+O erro na época 400 é 0.8366532
+O erro na época 500 é 0.8332894
+O erro na época 600 é 0.83100045
+O erro na época 700 é 0.8292701
+O erro na época 800 é 0.82790107
+O erro na época 900 é 0.8267163
+O erro na época 1000 é 0.82573855
+O erro na época 1100 é 0.82492775
+O erro na época 1200 é 0.8242011
+O erro na época 1300 é 0.823582
+O erro na época 1400 é 0.82304686
+O erro na época 1500 é 0.8225612
+O erro na época 1600 é 0.82205397
+O erro na época 1700 é 0.8214905
+O erro na época 1800 é 0.8210322
+O erro na época 1900 é 0.8205697
+A acurácia é: 0.7008102
+A Classe de um carro [[2, 3, 1, 2, 0, 0, 0]]  é: [0] // A classe do elemento é o último atributo do mesmo
+
+Ponto negativo detectado:
+Não consegui implementar uma função funcional que detectasse bem as 4 classes disponíveis, então a utilizada foi uma com o aspecto
+One Hot, detectando assim a classe que possui o maior número de elementos do batch de treinamento.
+
+OBS: Variações em ambos os teste de parâmetros não foram aqui detalhadas, pois as mesas apresentavam o mesmo resultado dado
+os pontos negativos de cada um dos métodos.
+ 
+ 
+                ___________________
+                |  Tempo  | Accu. |
+__________________________________|
+|Probabilistico |  < 1 s  | 0.752 |
+|---------------|-----------------|
+|Rede Neural    |  +- 9 s | 0.701 |
+¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯

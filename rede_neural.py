@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+from random import shuffle
 
 
 #Setando o seed do tensorflow e numpy com 0 para gerar uma sequencia aleatoria conhecida
@@ -74,6 +75,7 @@ while (cars != ""):
     # print(cars[0:foo[0]] + cars[foo[0]+1:foo[1]] + cars[foo[1]+1:foo[2]]+ cars[foo[2]+1:foo[3]]+ cars[foo[3]+1:foo[4]]+ cars[foo[4]+1:foo[5]]+ cars[foo[5]+1:])
     # print(foo)
     cars = file.readline()
+shuffle(carsList)
 # print(carsList)
 
 # print("Training entries: {}, labels: {}".format(len(carsList), len(train_labels)))
@@ -82,31 +84,21 @@ while (cars != ""):
 def build_net(n_features, n_classes):
     Dic = {}
 
-    buying = tf.placeholder(dtype=tf.float32, shape=[None, n_features])
-    Dic["buying"] = buying
-    
-    maint = tf.placeholder(dtype=tf.float32, shape=[None, n_features])
-    Dic["maint"] = maint
-
-    doors = tf.placeholder(dtype=tf.float32, shape=[None, n_features])
-    Dic["doors"] = doors
-
-    persons = tf.placeholder(dtype=tf.float32, shape=[None, n_features])
-    Dic["persons"] = persons
-
-    lug_boot = tf.placeholder(dtype=tf.float32, shape=[None, n_features])
-    Dic["lug_boot"] = lug_boot
-
-    safety = tf.placeholder(dtype=tf.float32, shape=[None, n_features])
-    Dic["safety"] = safety
+    car = tf.placeholder(dtype=tf.float32, shape=[None, n_features])
+    Dic["car"] = car
 
     clss = tf.placeholder(dtype=tf.int64, shape=[None])
     Dic["clss"] = clss
 
-    hidden_layer1 = tf.layers.dense( buying, 10 , activation=tf.nn.sigmoid)
+    hidden_layer1 = tf.layers.dense( car, 10 , activation=tf.nn.relu)
     Dic["layer1"] = hidden_layer1
 
     out = tf.layers.dense(hidden_layer1, n_classes, name="output")
+
+    #Loss function
+    # Y_ = tf.placeholder(dtype=tf.float32, shape=[None, n_classes])
+    # Dic["clss"] = Y_
+    # loss = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=out, labels=Y_))
 
     one_hot = tf.one_hot(clss, depth=n_classes)
 
@@ -116,12 +108,15 @@ def build_net(n_features, n_classes):
     opt = tf.train.GradientDescentOptimizer(learning_rate=0.07).minimize(loss)
     Dic["opt"] = opt
 
+
     softmax = tf.nn.softmax(out)
     Dic["softmax"] = softmax
 
+    # class_ = tf.nn.sigmoid(out)
     class_ = tf.argmax(softmax,1)
     Dic["class"] = class_
 
+    # compare_prediction = tf.equal(class_, tf.round(out))
     compare_prediction = tf.equal(class_, clss)
     accuracy = tf.reduce_mean(tf.cast(compare_prediction, tf.float32))
     Dic["accuracy"] = accuracy
@@ -134,8 +129,6 @@ sess = tf.InteractiveSession()
 #obtendo o número de features 
 n_features = len(carsList[1])
 
-print (n_features)
-
 Dic_cg = build_net(n_features,num_classes)
 
 sess.run(tf.global_variables_initializer())
@@ -145,16 +138,22 @@ epochs = 2000
 
 for i in range(epochs):
     
-    sess.run(Dic_cg["opt"], feed_dict={Dic_cg["buying"]: buyingValues, Dic_cg["maint"]: maintValues, Dic_cg["doors"]: doorsValues, Dic_cg["persons"]: personsValues, Dic_cg["lug_boot"]: lug_bootValues, Dic_cg["safety"]: safetyValues, Dic_cg["clss"]: clssValues})
+    sess.run(Dic_cg["opt"], feed_dict={Dic_cg["car"]: carsList , Dic_cg["clss"]: clssValues})
+
     
     # a cada 100 épocas o erro é impresso
     if  i % 100 == 0:
-        erro_train = sess.run(Dic_cg["loss"], feed_dict={Dic_cg["buying"]: buyingValues, Dic_cg["maint"]: maintValues, Dic_cg["doors"]: doorsValues, Dic_cg["persons"]: personsValues, Dic_cg["lug_boot"]: lug_bootValues, Dic_cg["safety"]: safetyValues, Dic_cg["clss"]: clssValues})
+        erro_train = sess.run(Dic_cg["loss"], feed_dict={Dic_cg["car"]: carsList , Dic_cg["clss"]: clssValues})
         print("O erro na época", i,"é", erro_train)
         
 #após o fim do treino, é calculada a acurácia
-acc = sess.run(Dic_cg["accuracy"], feed_dict={Dic_cg["buying"]: buyingValues, Dic_cg["maint"]: maintValues, Dic_cg["doors"]: doorsValues, Dic_cg["persons"]: personsValues, Dic_cg["lug_boot"]: lug_bootValues, Dic_cg["safety"]: safetyValues, Dic_cg["clss"]: clssValues})
+acc = sess.run(Dic_cg["accuracy"], feed_dict={Dic_cg["car"]: carsList , Dic_cg["clss"]: clssValues})
 print("A accurácia é:", acc)
+
+cla = sess.run(Dic_cg["class"], feed_dict={Dic_cg["car"]: carsList[:1]})
+
+print("A Classe de um carro", carsList[:1], " é:", cla)
+
 
 
 
